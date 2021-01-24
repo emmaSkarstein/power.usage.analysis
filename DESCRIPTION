@@ -1,0 +1,26 @@
+Package: power.usage.analysis
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Emma Sofie",
+           family = "Skarstein",
+           role = c("aut", "cre"),
+           email = "emma@skarstein.no",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Exploring and analyzing power consumption data from my home.
+Imports:
+  dplyr,
+  lubridate,
+  tidyr
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

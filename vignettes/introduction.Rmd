@@ -1,0 +1,126 @@
+---
+title: "Power usage analysis - using data from my home, January 2019 to today"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8
+)
+```
+
+Welcome to my power usage project! Through the fantastic service [elhub](https://www.elhub.no/) I have downloaded (and continue to download) monthly data sets that contain the hourly power usage in my appartment. This package contains functions and tools I will be using to visualize and maybe analyse this data. Here follows a brief tour.
+
+
+```{r setup, warning=FALSE, message=FALSE}
+library(power.usage.analysis)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+theme_set(theme_minimal())
+```
+
+
+First, let us load the data and look at the structure of it.
+
+```{r, warning=FALSE, message=FALSE}
+summary(power_data)
+```
+
+This is already quite clean and nice, but we can do better. The function `clean_and_prepare` will add some new columns giving the year, month and weekday of each observation. In addition, we will format the date so R recognizes it as such.
+
+```{r, warning=FALSE, message=FALSE}
+?clean_and_prepare
+```
+
+```{r, warning=FALSE, message=FALSE}
+data <- clean_and_prepare(power_data)
+```
+
+```{r, warning=FALSE, message=FALSE}
+head(data)
+```
+
+Let's try a simple plot of all the observations.
+```{r, warning=FALSE, message=FALSE}
+p_simple <- ggplot(data, aes(x = tid, y = forbruk)) + 
+  geom_line() +
+  ylab("Power usage") +
+  xlab("")
+p_simple
+```
+
+This is a mess. While we do see some general tendencies that are interesting (like maximum consumption varying seasonally), it is difficult to tell what is going on in all the noise. Maybe we can smooth it?
+
+```{r, warning=FALSE, message=FALSE}
+p_simple + geom_smooth(color = "darkorange")
+```
+
+This certainly looks smooth, but it's still looking quite messy. I'll try to add a better theme than the default.
+
+----add theme----
+
+
+-----also comment on missing values------
+
+
+Another option is to try to group the data by some time period by summing or averaging it.
+
+Let's first see if there seems to be any difference in consumption for each weekday. 
+```{r, warning=FALSE, message=FALSE}
+ggplot(data, aes(x = weekday, y = forbruk)) +
+  geom_violin(fill = "darkorange") +
+  geom_boxplot(width=0.1) +
+  ylab("Power usage") +
+  xlab("")
+
+```
+
+Okay, it pretty much looks like the distribution is the same for each week day, maybe not surprisingly, although I might have expected the consumption to be a bit higher during the week-end. However, during most of 2020 we worked from home. Could it be that this is affecting the results, and that weekday differences were larger in 2019? Let's investigate:
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(data, aes(x = weekday, y = forbruk, fill = year)) +
+  geom_violin() +
+  scale_fill_brewer(palette = "Dark2") +
+  ylab("Power usage") +
+  xlab("")
+
+ggplot(data, aes(x = weekday, y = forbruk, fill = year)) +
+  geom_boxplot() +
+  scale_fill_brewer(palette = "Dark2") +
+  ylab("Power usage") +
+  xlab("")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+monthly_data <- data %>%
+  group_by(month) %>%
+  summarise(sum_forb = sum(forbruk))
+
+year_month <- data %>%
+  group_by(month, year) %>%
+  summarise(sum_forb = sum(forbruk))
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(year_month, aes(x = month, y = sum_forb)) +
+  geom_col(aes(fill = year), color = "black", position = "dodge") +
+  scale_fill_brewer(palette = "Dark2") +
+  ylab("Total power usage per month") +
+  xlab("")
+```
+
+
+
+
+
