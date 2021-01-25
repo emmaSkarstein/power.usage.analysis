@@ -17,6 +17,7 @@ clean_and_prepare <- function(data){
   data$month <- as.factor(lubridate::month(data$tid))
   data$weekday <- factor(weekdays(data$tid), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
   data$year <- factor(lubridate::year(data$tid), levels = c(2019, 2020, 2021))
+  data$hour <- format(data$tid, format = "%H:%M:%S")
   return(tidyr::drop_na(data))
 }
 
