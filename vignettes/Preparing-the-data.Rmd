@@ -14,9 +14,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE, warning=FALSE}
 library(power.usage.analysis)
+library(dplyr)
 ```
+
+
+This vignette explains how to get data from elhub.no and prepare it in a way that makes it compatible with this package.
+
 
 # Downloading data from elhub.no
 
@@ -26,7 +31,7 @@ To download your personal power consumption data (provided you are in Norway), g
 # Merging the monthly data
 The data from elhub.no will be given in one csv file per month. To merge the data, you can use the following command to merge the montly data into one data frame:
 
-```{r, echo = FALSE}
+```{r, eval = FALSE}
 all_power_data <- file_names %>%
     lapply(function(i){read.csv(paste0("path_to_folder_with_files", i), dec = ",", header = TRUE)}) %>%
     dplyr::bind_rows()
