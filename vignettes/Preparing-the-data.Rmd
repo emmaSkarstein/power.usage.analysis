@@ -1,0 +1,58 @@
+---
+title: "Preparing the data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Preparing-the-data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(power.usage.analysis)
+```
+
+# Downloading data from elhub.no
+
+To download your personal power consumption data (provided you are in Norway), go to [elhub.no](https://elhub.no/), log on to "Min side", click "Se måleverdier", then "Last ned forbruksverdier", and select the month you wish to download data for.
+
+
+# Merging the monthly data
+The data from elhub.no will be given in one csv file per month. To merge the data, you can use the following command to merge the montly data into one data frame:
+
+```{r, echo = FALSE}
+all_power_data <- file_names %>%
+    lapply(function(i){read.csv(paste0("path_to_folder_with_files", i), dec = ",", header = TRUE)}) %>%
+    dplyr::bind_rows()
+
+```
+
+The data in `all_power_data` as created above should have the same structure as the data `power_data`, which is included in this package.
+
+```{r}
+head(power_data)
+```
+
+# Cleaning the data
+
+Lastly, we can make the data a bit easier so work with by formating the date, and adding the year, month, weekday and hour of each observation. This is done in the function `clean_and_prepare`.
+
+```{r, warning=FALSE, message=FALSE}
+?clean_and_prepare
+```
+
+```{r, warning=FALSE, message=FALSE}
+data <- clean_and_prepare(power_data)
+```
+
+```{r, warning=FALSE, message=FALSE}
+head(data)
+```
+
+Now the data is ready for plotting!
